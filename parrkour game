@@ -1,0 +1,57 @@
+
+import random
+import arcade
+
+# Set up the screen
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+SCREEN_TITLE = "Parkour Game"
+
+# Set up the player
+PLAYER_SIZE = 32
+PLAYER_SPEED = 5
+
+# Set up the obstacles
+OBSTACLE_SIZE = 64
+OBSTACLE_COUNT = 10
+
+# Set up the game
+class MyGame(arcade.Window):
+    def __init__(self):
+        super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+
+        # Set up the player
+        self.player = arcade.Sprite("player.png", PLAYER_SIZE, PLAYER_SIZE)
+        self.player.center_x = SCREEN_WIDTH // 2
+        self.player.center_y = SCREEN_HEIGHT // 2
+
+        # Set up the obstacles
+        self.obstacles = arcade.SpriteList()
+        for i in range(OBSTACLE_COUNT):
+            obstacle = arcade.Sprite("obstacle.png", OBSTACLE_SIZE, OBSTACLE_SIZE)
+            obstacle.center_x = random.randint(0, SCREEN_WIDTH)
+            obstacle.center_y = random.randint(0, SCREEN_HEIGHT)
+            self.obstacles.append(obstacle)
+
+    def on_update(self, delta_time):
+        # Update the player's position
+        self.player.update()
+
+        # Check for collisions between the player and the obstacles
+        for obstacle in self.obstacles:
+            if self.player.collides_with_sprite(obstacle):
+                self.player.change_x = 0
+                self.player.change_y = 0
+
+        # Check if the player has reached the end of the level
+        if self.player.center_x >= SCREEN_WIDTH:
+            self.player.center_x = 0
+        elif self.player.center_x <= 0:
+            self.player.center_x = SCREEN_WIDTH
+
+        if self.player.center_y >= SCREEN_HEIGHT:
+            self.player.center_y = 0
+        elif self.player.center_y <= 0:
+            self.player.center_y = SCREEN_HEIGHT
+
+    def on_draw(self):
